@@ -17,5 +17,6 @@ int main(int argc, char const *argv[])
     printf("%d\n", intal_compare(s1, s2));
     printf("%s\n", intal_add(s1, s2));
     printf("%s\n", intal_diff(s1, s2));
+    printf("%s\n", intal_multiply(s1, s2));
     return 0;
 }

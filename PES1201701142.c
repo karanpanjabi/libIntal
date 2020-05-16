@@ -20,11 +20,16 @@ static int max2(int a, int b)
     return (a > b) ? a : b;
 }
 
+static void set_zero(char *intal, int numdigits)
+{
+    memset(intal, '0', numdigits);
+}
+
 static char *get_intal(int numdigits)
 {
     int tsize = (numdigits + 1) * sizeof(char);
     char *temp = (char *)malloc(tsize);
-    memset(temp, '0', tsize - 1);
+    set_zero(temp, numdigits);
     temp[tsize] = 0;
 
     return temp;
@@ -206,13 +211,36 @@ char* intal_multiply(const char* intal1, const char* intal2)
 
     char *mul = get_intal(mullen);
 
-    for (int i = 0; i < len2-1; i++)
+    char *temp = get_intal(mullen);
+
+    for (int i = 0; i < len2; i++)
     {
         int d2 = get_digit_intal(intal2, len2, i);
 
-        // multiply intal1 with d2 and add to mul
+        // multiply intal1 with (d2) and add to mul
+        
+        int carry = 0;
+        for (int j = 0; j < len1 + 1; j++) // +1 to take care of carry
+        {
+            int d1 = get_digit_intal(intal1, len1, j);
+            int s = d1*d2 + carry;
+
+            carry = s/10;
+            s = s%10;
+
+            temp[mullen - j - 1 - i] = itoc(s);
+        }
+
+        char *tmul = intal_add(mul, temp);
+        free(mul);
+        mul = tmul;
+
+        set_zero(temp, mullen);
     }
-    
+
+    free(temp);
+
+    return mul;
 }
 
 // Returns intal1 mod intal2
