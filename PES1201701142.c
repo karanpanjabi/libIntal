@@ -30,7 +30,7 @@ static char *get_intal(int numdigits)
     int tsize = (numdigits + 1) * sizeof(char);
     char *temp = (char *)malloc(tsize);
     set_zero(temp, numdigits);
-    temp[tsize] = 0;
+    temp[tsize-1] = 0;
 
     return temp;
 }
@@ -77,6 +77,29 @@ static int get_digit_intal(char *intal, int intallen, int digitnum)
     if (digitnum >= intallen)
         return 0;
     return ctoi(intal[intallen - digitnum - 1]);
+}
+
+// returns char* version of num
+static char *make_intal(unsigned int num)
+{
+    int templen = 11;
+    char *temp = get_intal(templen);
+
+    int n = num;
+    int i = 0;
+    while (n != 0)
+    {
+        temp[templen - i - 1] = itoc(n % 10);
+        n = n / 10;
+        i++;
+    }
+
+    char *_temp = get_intal_woz(temp, templen);
+
+    if (_temp != temp)
+        free(temp);
+
+    return _temp;
 }
 
 // Returns the sum of two intals.
@@ -203,11 +226,11 @@ char *intal_diff(const char *intal1, const char *intal2)
 }
 
 // Returns the product of two intals.
-char* intal_multiply(const char* intal1, const char* intal2)
+char *intal_multiply(const char *intal1, const char *intal2)
 {
     int len1 = strlen(intal1);
     int len2 = strlen(intal2);
-    int mullen = len1+len2;
+    int mullen = len1 + len2;
 
     char *mul = get_intal(mullen);
 
@@ -218,15 +241,15 @@ char* intal_multiply(const char* intal1, const char* intal2)
         int d2 = get_digit_intal(intal2, len2, i);
 
         // multiply intal1 with (d2) and add to mul
-        
+
         int carry = 0;
         for (int j = 0; j < len1 + 1; j++) // +1 to take care of carry
         {
             int d1 = get_digit_intal(intal1, len1, j);
-            int s = d1*d2 + carry;
+            int s = d1 * d2 + carry;
 
-            carry = s/10;
-            s = s%10;
+            carry = s / 10;
+            s = s % 10;
 
             temp[mullen - j - 1 - i] = itoc(s);
         }
@@ -252,40 +275,48 @@ char* intal_multiply(const char* intal1, const char* intal2)
 // That will take intal1/intal2 iterations.
 // You need to design a O(log intal1) time taking algorithm.
 // Generate your own testcases at https://www.omnicalculator.com/math/modulo
-char* intal_mod(const char* intal1, const char* intal2)
+char *intal_mod(const char *intal1, const char *intal2)
 {
-
 }
 
 // Returns intal1 ^ intal2.
 // Let 0 ^ n = 0, where n is an intal.
 // Implement a O(log n) intal multiplications algorithm.
 // 2^3000 has less than 1000 decimal digits. 3000 intal multiplications may exceed time limit.
-char* intal_pow(const char* intal1, unsigned int n)
+char *intal_pow(const char *intal1, unsigned int n)
 {
-
 }
 
 // Returns Greatest Common Devisor of intal1 and intal2.
 // Let GCD be "0" if both intal1 and intal2 are "0" even though it is undefined, mathematically.
 // Use Euclid's theorem to not exceed the time limit.
-char* intal_gcd(const char* intal1, const char* intal2)
+char *intal_gcd(const char *intal1, const char *intal2)
 {
-
 }
 
 // Returns nth fibonacci number.
 // intal_fibonacci(0) = intal "0".
 // intal_fibonacci(1) = intal "1".
-char* intal_fibonacci(unsigned int n)
+char *intal_fibonacci(unsigned int n)
 {
-
 }
 
 // Returns the factorial of n.
-char* intal_factorial(unsigned int n)
+char *intal_factorial(unsigned int n)
 {
+    char *res = get_intal(1);
+    res[0] = '1';
 
+    for (int i = 1; i <= n; i++)
+    {
+        char *i_intal = make_intal(i);
+        char *_res = intal_multiply(res, i_intal);
+        free(res);
+        res = _res;
+        free(i_intal);
+    }
+
+    return res;
 }
 
 // Returns the Binomial Coefficient C(n,k).
@@ -295,9 +326,8 @@ char* intal_factorial(unsigned int n)
 // Make sure the intermediate intal values do not cross C(n,k).
 // Use Dynamic Programming. Use extra space of not more than O(k) number of intals. Do not allocate the whole O(nk) DP table.
 // Don't let C(1000,900) take more time than C(1000,500). Time limit may exceed otherwise.
-char* intal_bincoeff(unsigned int n, unsigned int k)
+char *intal_bincoeff(unsigned int n, unsigned int k)
 {
-
 }
 
 // Returns the offset of the largest intal in the array.
@@ -305,7 +335,6 @@ char* intal_bincoeff(unsigned int n, unsigned int k)
 // 1 <= n <= 1000
 int intal_max(char **arr, int n)
 {
-
 }
 
 // Returns the offset of the smallest intal in the array.
@@ -313,15 +342,13 @@ int intal_max(char **arr, int n)
 // 1 <= n <= 1000
 int intal_min(char **arr, int n)
 {
-
 }
 
 // Returns the offset of the first occurrence of the key intal in the array.
 // Returns -1 if the key is not found.
 // 1 <= n <= 1000
-int intal_search(char **arr, int n, const char* key)
+int intal_search(char **arr, int n, const char *key)
 {
-
 }
 
 // Returns the offset of the first occurrence of the key intal in the SORTED array.
@@ -329,9 +356,8 @@ int intal_search(char **arr, int n, const char* key)
 // The array is sorted in nondecreasing order.
 // 1 <= n <= 1000
 // The implementation should be a O(log n) algorithm.
-int intal_binsearch(char **arr, int n, const char* key)
+int intal_binsearch(char **arr, int n, const char *key)
 {
-
 }
 
 // Sorts the array of n intals.
@@ -339,7 +365,6 @@ int intal_binsearch(char **arr, int n, const char* key)
 // The implementation should be a O(n log n) algorithm.
 void intal_sort(char **arr, int n)
 {
-
 }
 
 // Coin-Row Problem - Dynamic Programming Solution
@@ -349,7 +374,6 @@ void intal_sort(char **arr, int n)
 // 1 <= n <= 1000
 // The implementation should be O(n) time and O(1) extra space even though the DP table may be of O(n) size.
 // Eg: Coins = [10, 2, 4, 6, 3, 9, 5] returns 25
-char* coin_row_problem(char **arr, int n)
+char *coin_row_problem(char **arr, int n)
 {
-
 }
