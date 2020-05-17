@@ -151,6 +151,7 @@ int intal_compare(const char *intal1, const char *intal2)
     int len1 = strlen(intal1);
     int len2 = strlen(intal2);
 
+    // TODO: fix for 0 and 00
     if (len1 > len2)
     {
         return 1;
@@ -263,7 +264,12 @@ char *intal_multiply(const char *intal1, const char *intal2)
 
     free(temp);
 
-    return mul;
+    char *_mul = get_intal_woz(mul, strlen(mul));
+
+    if(_mul != mul)
+        free(mul);
+
+    return _mul;
 }
 
 // Returns intal1 mod intal2
@@ -299,6 +305,39 @@ char *intal_gcd(const char *intal1, const char *intal2)
 // intal_fibonacci(1) = intal "1".
 char *intal_fibonacci(unsigned int n)
 {
+    char *first = make_intal(0);
+    char *second = make_intal(1);
+
+    char *fib = NULL;
+
+    if(n == 0)
+    {
+        free(second);
+        return first;
+    }
+    if(n == 1)
+    {
+        free(first);
+        return second;
+    }
+
+    char *third;
+    for (unsigned int i = 2; i <= n; i++)
+    {
+        // third = first + second
+        // first = second
+        // second = third
+
+        third = intal_add(first, second);
+
+        free(first);
+        first = second;
+        second = third;
+    }
+    
+    free(first);
+
+    return third;
 }
 
 // Returns the factorial of n.
@@ -307,7 +346,7 @@ char *intal_factorial(unsigned int n)
     char *res = get_intal(1);
     res[0] = '1';
 
-    for (int i = 1; i <= n; i++)
+    for (unsigned int i = 1; i <= n; i++)
     {
         char *i_intal = make_intal(i);
         char *_res = intal_multiply(res, i_intal);

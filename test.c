@@ -21,5 +21,6 @@ int main(int argc, char const *argv[])
     printf("%s\n", intal_diff(s1, s2));
     printf("%s\n", intal_multiply(s1, s2));
     printf("%s\n", intal_factorial(atoi(s1)));
+    printf("%s\n", intal_fibonacci(atoi(s1)));
     return 0;
 }
