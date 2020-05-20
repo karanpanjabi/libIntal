@@ -20,6 +20,15 @@ static int max2(int a, int b)
     return (a > b) ? a : b;
 }
 
+static void disp_arr(char **arr, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("%s, ", arr[i]);
+    }
+    printf("\n");
+}
+
 static void set_zero(char *intal, int numdigits)
 {
     memset(intal, '0', numdigits);
@@ -30,7 +39,7 @@ static char *get_intal(int numdigits)
     int tsize = (numdigits + 1) * sizeof(char);
     char *temp = (char *)malloc(tsize);
     set_zero(temp, numdigits);
-    temp[tsize-1] = 0;
+    temp[tsize - 1] = 0;
 
     return temp;
 }
@@ -266,7 +275,7 @@ char *intal_multiply(const char *intal1, const char *intal2)
 
     char *_mul = get_intal_woz(mul, strlen(mul));
 
-    if(_mul != mul)
+    if (_mul != mul)
         free(mul);
 
     return _mul;
@@ -283,6 +292,16 @@ char *intal_multiply(const char *intal1, const char *intal2)
 // Generate your own testcases at https://www.omnicalculator.com/math/modulo
 char *intal_mod(const char *intal1, const char *intal2)
 {
+    int len1 = strlen(intal1);
+    int len2 = strlen(intal2);
+
+    // doing long division: intal1/intal2
+    // quo and rem
+
+    char *quo = get_intal(len1);
+    char *rem = get_intal(len2);
+
+    return quo;
 }
 
 // Returns intal1 ^ intal2.
@@ -291,6 +310,8 @@ char *intal_mod(const char *intal1, const char *intal2)
 // 2^3000 has less than 1000 decimal digits. 3000 intal multiplications may exceed time limit.
 char *intal_pow(const char *intal1, unsigned int n)
 {
+    char *res = get_intal(2);
+    return res;
 }
 
 // Returns Greatest Common Devisor of intal1 and intal2.
@@ -298,6 +319,8 @@ char *intal_pow(const char *intal1, unsigned int n)
 // Use Euclid's theorem to not exceed the time limit.
 char *intal_gcd(const char *intal1, const char *intal2)
 {
+    char *res = get_intal(2);
+    return res;
 }
 
 // Returns nth fibonacci number.
@@ -310,12 +333,12 @@ char *intal_fibonacci(unsigned int n)
 
     char *fib = NULL;
 
-    if(n == 0)
+    if (n == 0)
     {
         free(second);
         return first;
     }
-    if(n == 1)
+    if (n == 1)
     {
         free(first);
         return second;
@@ -334,7 +357,7 @@ char *intal_fibonacci(unsigned int n)
         first = second;
         second = third;
     }
-    
+
     free(first);
 
     return third;
@@ -367,6 +390,8 @@ char *intal_factorial(unsigned int n)
 // Don't let C(1000,900) take more time than C(1000,500). Time limit may exceed otherwise.
 char *intal_bincoeff(unsigned int n, unsigned int k)
 {
+    char *res = get_intal(2);
+    return res;
 }
 
 // Returns the offset of the largest intal in the array.
@@ -374,6 +399,16 @@ char *intal_bincoeff(unsigned int n, unsigned int k)
 // 1 <= n <= 1000
 int intal_max(char **arr, int n)
 {
+    int m = 0;
+    for (int i = 1; i < n; i++)
+    {
+        if (intal_compare(arr[i], arr[m]) == 1)
+        {
+            m = i;
+        }
+    }
+
+    return m;
 }
 
 // Returns the offset of the smallest intal in the array.
@@ -381,6 +416,16 @@ int intal_max(char **arr, int n)
 // 1 <= n <= 1000
 int intal_min(char **arr, int n)
 {
+    int m = 0;
+    for (int i = 1; i < n; i++)
+    {
+        if (intal_compare(arr[i], arr[m]) == -1)
+        {
+            m = i;
+        }
+    }
+
+    return m;
 }
 
 // Returns the offset of the first occurrence of the key intal in the array.
@@ -388,6 +433,15 @@ int intal_min(char **arr, int n)
 // 1 <= n <= 1000
 int intal_search(char **arr, int n, const char *key)
 {
+    for (int i = 0; i < n; i++)
+    {
+        if (intal_compare(arr[i], key) == 0)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 // Returns the offset of the first occurrence of the key intal in the SORTED array.
@@ -397,13 +451,110 @@ int intal_search(char **arr, int n, const char *key)
 // The implementation should be a O(log n) algorithm.
 int intal_binsearch(char **arr, int n, const char *key)
 {
+    int beg, end;
+    int mid;
+    beg = 0;
+    end = n - 1;
+    while (beg <= end)
+    {
+        mid = (beg + end) / 2;
+        int comp = intal_compare(key, arr[mid]);
+        if (comp == 0)
+        {
+            return mid;
+        }
+        else if (comp == 1) // key is greater than mid
+        {
+            beg = mid + 1;
+        }
+        else // key is less than mid
+        {
+            end = mid - 1;
+        }
+    }
+
+    return -1;
 }
+
+static void merge(char **arr, int l, int r)
+{
+    int mid = (l+r)/2;
+    
+    int nleft = mid - l + 1; // l ... mid
+    int nright = r - mid; // mid+1 .. r
+    char **left = (char **) malloc(nleft * sizeof(char **));
+    char **right = (char **) malloc(nright * sizeof(char **));
+
+    // printf("%d %d %d %d\n", nleft, nright, l, r);
+
+    memcpy(left, arr+l, nleft * sizeof(char **));
+    memcpy(right, arr+mid+1, nright * sizeof(char **));
+    
+    // disp_arr(left, nleft);
+    // disp_arr(right, nright);
+    int i = 0, j = 0, k = l;
+    while(i < nleft && j < nright)
+    {
+        if(intal_compare(left[i],right[j]) == -1)
+        {
+            arr[k] = left[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = right[j];
+            j++;
+        }
+        k++;
+    }
+
+    while(i < nleft)
+    {
+        arr[k] = left[i];
+        k++;
+        i++;
+    }
+
+    while(j < nright)
+    {
+        arr[k] = right[j];
+        k++;
+        j++;
+    }
+
+
+    free(left);
+    free(right);
+
+}
+
+static void merge_sort(char **arr, int l, int r)
+{
+    if(l < r)
+    {
+        // printf("debug: %d %d\n", l, r);
+        int mid = (l+r)/2;
+        merge_sort(arr, l, mid);
+        merge_sort(arr, mid+1, r);
+
+        merge(arr, l, r);
+    }
+}
+
+
 
 // Sorts the array of n intals.
 // 1 <= n <= 1000
 // The implementation should be a O(n log n) algorithm.
 void intal_sort(char **arr, int n)
 {
+    // printf("\n");
+    // disp_arr(arr, n);
+    // printf("\n");
+    merge_sort(arr, 0, n-1);
+    // printf("\n");
+    // disp_arr(arr, n);
+    // printf("\n");
 }
 
 // Coin-Row Problem - Dynamic Programming Solution
@@ -415,4 +566,22 @@ void intal_sort(char **arr, int n)
 // Eg: Coins = [10, 2, 4, 6, 3, 9, 5] returns 25
 char *coin_row_problem(char **arr, int n)
 {
+    char *s0 = "0";
+    char *s1 = arr[1];
+    char *s2 = s1;
+    for (int i = 1; i < n; i++)
+    {
+        char *_s = intal_add(arr[i], s0);
+        char *_maxlist[] = {s1, _s};
+        int idx = intal_max(_maxlist, 2);
+        s2 = _maxlist[idx];
+        
+        if(s2 != _s)
+            free(_s);
+
+        s0 = s1;
+        s1 = s2;
+    }
+    
+    return s2;
 }
