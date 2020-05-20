@@ -34,6 +34,7 @@ static void set_zero(char *intal, int numdigits)
     memset(intal, '0', numdigits);
 }
 
+// mallocs numdigits for intal and sets to 0
 static char *get_intal(int numdigits)
 {
     int tsize = (numdigits + 1) * sizeof(char);
@@ -641,7 +642,7 @@ void intal_sort(char **arr, int n)
 // Eg: Coins = [10, 2, 4, 6, 3, 9, 5] returns 25
 char *coin_row_problem(char **arr, int n)
 {
-    char *s0 = "0";
+    char *s0 = make_intal(0);
     char *s1 = arr[1];
     char *s2 = s1;
     for (int i = 1; i < n; i++)
