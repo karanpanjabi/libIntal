@@ -388,8 +388,18 @@ char *intal_pow(const char *intal1, unsigned int n)
 // Use Euclid's theorem to not exceed the time limit.
 char *intal_gcd(const char *intal1, const char *intal2)
 {
-    char *res = get_intal(2);
-    return res;
+    if(strcmp(intal2, "0") == 0)
+    {
+        return strdup(intal1);
+    }
+    else
+    {
+        char *amodb = intal_mod(intal1, intal2);
+        char *res = intal_gcd(intal2, amodb);
+        free(amodb);
+        return res;
+    }
+    
 }
 
 // Returns nth fibonacci number.
