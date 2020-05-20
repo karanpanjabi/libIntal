@@ -360,7 +360,26 @@ char *intal_mod(const char *intal1, const char *intal2)
 // 2^3000 has less than 1000 decimal digits. 3000 intal multiplications may exceed time limit.
 char *intal_pow(const char *intal1, unsigned int n)
 {
-    char *res = get_intal(2);
+    if(strcmp(intal1, "0") == 0) return make_intal(0);
+    if(n == 0) return make_intal(1);
+
+    char *res;
+    if(n == 1) return strdup(intal1);
+    if(n % 2 == 0)
+    {
+        char *_pow2 = intal_pow(intal1, n/2);
+        res = intal_multiply(_pow2, _pow2);
+        free(_pow2);
+    }
+    else
+    {
+        char *_pow2 = intal_pow(intal1, (n-1)/2);
+        char *_mult = intal_multiply(_pow2, _pow2);
+        res = intal_multiply(_mult, intal1);
+        free(_mult);
+        free(_pow2);
+    }
+    
     return res;
 }
 
