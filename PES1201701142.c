@@ -298,10 +298,60 @@ char *intal_mod(const char *intal1, const char *intal2)
     // doing long division: intal1/intal2
     // quo and rem
 
-    char *quo = get_intal(len1);
+    // char *quo = get_intal(len1);
     char *rem = get_intal(len2);
+    memcpy(rem, intal1, len2); // initial remainder
+    char *div = strdup(rem);
 
-    return quo;
+    char *multiple_table[10];
+    for (int i = 0; i < 10; i++)
+    {
+        char *_i = make_intal(i);
+        multiple_table[i] = intal_multiply(intal2, _i);     // TODO: replace multiply with add
+        free(_i);
+    }
+
+    char *_ten = make_intal(10);
+    
+
+    int iters = len1 - len2 + 1;
+    for (int i = len2; i < iters+len2; i++)
+    {
+        // check which multiple of intal2 is just less than div
+        int mult = 9;
+        for (int j = 9; j >= 0; j--)
+        {
+            int _comp = intal_compare(multiple_table[j], div);
+            if(_comp == -1 || _comp == 0)
+            {
+                mult = j;
+                break;
+            }
+        }
+        
+        // rem = div - multiple_table[mult]
+        free(rem);
+        rem = intal_diff(div, multiple_table[mult]);
+
+        // div = rem*10 + next digit in intal1 if there is
+        if(i < len1)
+        {
+            int nextdigit = ctoi(intal1[i]);
+            char *_nextdigit = make_intal(nextdigit);
+            char *_rem10 = intal_multiply(rem, _ten);
+
+            free(div);
+            div = intal_add(_rem10, _nextdigit);
+
+            free(_rem10);
+            free(_nextdigit);
+        }
+    }
+
+    free(div);
+    free(_ten);
+
+    return rem;
 }
 
 // Returns intal1 ^ intal2.
@@ -478,24 +528,24 @@ int intal_binsearch(char **arr, int n, const char *key)
 
 static void merge(char **arr, int l, int r)
 {
-    int mid = (l+r)/2;
-    
+    int mid = (l + r) / 2;
+
     int nleft = mid - l + 1; // l ... mid
-    int nright = r - mid; // mid+1 .. r
-    char **left = (char **) malloc(nleft * sizeof(char **));
-    char **right = (char **) malloc(nright * sizeof(char **));
+    int nright = r - mid;    // mid+1 .. r
+    char **left = (char **)malloc(nleft * sizeof(char *));
+    char **right = (char **)malloc(nright * sizeof(char *));
 
     // printf("%d %d %d %d\n", nleft, nright, l, r);
 
-    memcpy(left, arr+l, nleft * sizeof(char **));
-    memcpy(right, arr+mid+1, nright * sizeof(char **));
-    
+    memcpy(left, arr + l, nleft * sizeof(char *));
+    memcpy(right, arr + mid + 1, nright * sizeof(char *));
+
     // disp_arr(left, nleft);
     // disp_arr(right, nright);
     int i = 0, j = 0, k = l;
-    while(i < nleft && j < nright)
+    while (i < nleft && j < nright)
     {
-        if(intal_compare(left[i],right[j]) == -1)
+        if (intal_compare(left[i], right[j]) == -1)
         {
             arr[k] = left[i];
             i++;
@@ -508,40 +558,36 @@ static void merge(char **arr, int l, int r)
         k++;
     }
 
-    while(i < nleft)
+    while (i < nleft)
     {
         arr[k] = left[i];
         k++;
         i++;
     }
 
-    while(j < nright)
+    while (j < nright)
     {
         arr[k] = right[j];
         k++;
         j++;
     }
 
-
     free(left);
     free(right);
-
 }
 
 static void merge_sort(char **arr, int l, int r)
 {
-    if(l < r)
+    if (l < r)
     {
         // printf("debug: %d %d\n", l, r);
-        int mid = (l+r)/2;
+        int mid = (l + r) / 2;
         merge_sort(arr, l, mid);
-        merge_sort(arr, mid+1, r);
+        merge_sort(arr, mid + 1, r);
 
         merge(arr, l, r);
     }
 }
-
-
 
 // Sorts the array of n intals.
 // 1 <= n <= 1000
@@ -551,7 +597,7 @@ void intal_sort(char **arr, int n)
     // printf("\n");
     // disp_arr(arr, n);
     // printf("\n");
-    merge_sort(arr, 0, n-1);
+    merge_sort(arr, 0, n - 1);
     // printf("\n");
     // disp_arr(arr, n);
     // printf("\n");
@@ -575,13 +621,13 @@ char *coin_row_problem(char **arr, int n)
         char *_maxlist[] = {s1, _s};
         int idx = intal_max(_maxlist, 2);
         s2 = _maxlist[idx];
-        
-        if(s2 != _s)
+
+        if (s2 != _s)
             free(_s);
 
         s0 = s1;
         s1 = s2;
     }
-    
+
     return s2;
 }
