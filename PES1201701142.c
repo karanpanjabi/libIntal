@@ -352,6 +352,12 @@ char *intal_mod(const char *intal1, const char *intal2)
     free(div);
     free(_ten);
 
+    for (int i = 0; i < 10; i++)
+    {
+        free(multiple_table[i]);
+    }
+    
+
     return rem;
 }
 
@@ -470,7 +476,58 @@ char *intal_factorial(unsigned int n)
 // Don't let C(1000,900) take more time than C(1000,500). Time limit may exceed otherwise.
 char *intal_bincoeff(unsigned int n, unsigned int k)
 {
-    char *res = get_intal(2);
+    char **dptable[2];
+    for (int i = 0; i < 2; i++)
+    {
+        dptable[i] = (char **) malloc((k+1)*sizeof(char *));
+    }
+
+    dptable[0][0] = make_intal(1); // C(0, 0) is 1
+    dptable[1][0] = make_intal(1); // C(1, 0) is 1
+    dptable[1][1] = make_intal(1); // C(1, 1) is 1
+    
+    for (int i = 2; i <= n; i++)
+    {
+        // going to find C(i, j) where j = 1...i
+        for (int j = 1; j <= i && j <= k; j++)
+        {
+            // C(i, j) = C(i-1, j-1) + C(i-1, j) // if j <= i-1
+            // C(i, j) = C(i-1, j-1) // if j = i
+            // updating dptable[i%2][j]
+
+            if(j < i)
+            {
+                if(j <= i-2)
+                    free(dptable[i%2][j]);
+                dptable[i%2][j] = intal_add(dptable[(i-1)%2][j-1], dptable[(i-1)%2][j]);
+            }
+            else
+            {
+                dptable[i%2][j] = strdup(dptable[(i-1)%2][j-1]);
+            }
+        }
+    }
+    
+    // free dptable[n-1][0..j] j = min(k, n-1)
+    // free dptable[n][0..j] j = min(k-1, n)
+    if(n > 0)
+    {
+        for (int j = 0; j <= n-1 && j <= k; j++)
+        {
+            free(dptable[(n-1)%2][j]);
+        }
+    }
+    for (int j = 0; j <= n && j <= k-1; j++)
+    {
+        free(dptable[n%2][j]);
+    }
+    
+
+    char *res = dptable[n%2][k];
+
+    free(dptable[0]);
+    free(dptable[1]);
+
     return res;
 }
 
