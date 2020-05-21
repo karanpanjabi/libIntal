@@ -476,6 +476,7 @@ char *intal_factorial(unsigned int n)
 // Don't let C(1000,900) take more time than C(1000,500). Time limit may exceed otherwise.
 char *intal_bincoeff(unsigned int n, unsigned int k)
 {
+    if(k > n) return make_intal(0); // undefined technically
     if (n - k < k)
     {
         k = n - k;
@@ -707,7 +708,7 @@ void intal_sort(char **arr, int n)
 char *coin_row_problem(char **arr, int n)
 {
     char *s0 = make_intal(0);
-    char *s1 = arr[1];
+    char *s1 = arr[0];
     char *s2 = s1;
     for (int i = 1; i < n; i++)
     {
