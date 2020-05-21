@@ -308,34 +308,33 @@ char *intal_mod(const char *intal1, const char *intal2)
     for (int i = 0; i < 10; i++)
     {
         char *_i = make_intal(i);
-        multiple_table[i] = intal_multiply(intal2, _i);     // TODO: replace multiply with add
+        multiple_table[i] = intal_multiply(intal2, _i); // TODO: replace multiply with add
         free(_i);
     }
 
     char *_ten = make_intal(10);
-    
 
     int iters = len1 - len2 + 1;
-    for (int i = len2; i < iters+len2; i++)
+    for (int i = len2; i < iters + len2; i++)
     {
         // check which multiple of intal2 is just less than div
         int mult = 9;
         for (int j = 9; j >= 0; j--)
         {
             int _comp = intal_compare(multiple_table[j], div);
-            if(_comp == -1 || _comp == 0)
+            if (_comp == -1 || _comp == 0)
             {
                 mult = j;
                 break;
             }
         }
-        
+
         // rem = div - multiple_table[mult]
         free(rem);
         rem = intal_diff(div, multiple_table[mult]);
 
         // div = rem*10 + next digit in intal1 if there is
-        if(i < len1)
+        if (i < len1)
         {
             int nextdigit = ctoi(intal1[i]);
             char *_nextdigit = make_intal(nextdigit);
@@ -356,7 +355,6 @@ char *intal_mod(const char *intal1, const char *intal2)
     {
         free(multiple_table[i]);
     }
-    
 
     return rem;
 }
@@ -367,26 +365,29 @@ char *intal_mod(const char *intal1, const char *intal2)
 // 2^3000 has less than 1000 decimal digits. 3000 intal multiplications may exceed time limit.
 char *intal_pow(const char *intal1, unsigned int n)
 {
-    if(strcmp(intal1, "0") == 0) return make_intal(0);
-    if(n == 0) return make_intal(1);
+    if (strcmp(intal1, "0") == 0)
+        return make_intal(0);
+    if (n == 0)
+        return make_intal(1);
 
     char *res;
-    if(n == 1) return strdup(intal1);
-    if(n % 2 == 0)
+    if (n == 1)
+        return strdup(intal1);
+    if (n % 2 == 0)
     {
-        char *_pow2 = intal_pow(intal1, n/2);
+        char *_pow2 = intal_pow(intal1, n / 2);
         res = intal_multiply(_pow2, _pow2);
         free(_pow2);
     }
     else
     {
-        char *_pow2 = intal_pow(intal1, (n-1)/2);
+        char *_pow2 = intal_pow(intal1, (n - 1) / 2);
         char *_mult = intal_multiply(_pow2, _pow2);
         res = intal_multiply(_mult, intal1);
         free(_mult);
         free(_pow2);
     }
-    
+
     return res;
 }
 
@@ -395,7 +396,7 @@ char *intal_pow(const char *intal1, unsigned int n)
 // Use Euclid's theorem to not exceed the time limit.
 char *intal_gcd(const char *intal1, const char *intal2)
 {
-    if(strcmp(intal2, "0") == 0)
+    if (strcmp(intal2, "0") == 0)
     {
         return strdup(intal1);
     }
@@ -406,7 +407,6 @@ char *intal_gcd(const char *intal1, const char *intal2)
         free(amodb);
         return res;
     }
-    
 }
 
 // Returns nth fibonacci number.
@@ -476,16 +476,21 @@ char *intal_factorial(unsigned int n)
 // Don't let C(1000,900) take more time than C(1000,500). Time limit may exceed otherwise.
 char *intal_bincoeff(unsigned int n, unsigned int k)
 {
+    if (n - k < k)
+    {
+        k = n - k;
+    }
+
     char **dptable[2];
     for (int i = 0; i < 2; i++)
     {
-        dptable[i] = (char **) malloc((k+1)*sizeof(char *));
+        dptable[i] = (char **)malloc((k + 1) * sizeof(char *));
     }
 
     dptable[0][0] = make_intal(1); // C(0, 0) is 1
     dptable[1][0] = make_intal(1); // C(1, 0) is 1
     dptable[1][1] = make_intal(1); // C(1, 1) is 1
-    
+
     for (int i = 2; i <= n; i++)
     {
         // going to find C(i, j) where j = 1...i
@@ -495,35 +500,35 @@ char *intal_bincoeff(unsigned int n, unsigned int k)
             // C(i, j) = C(i-1, j-1) // if j = i
             // updating dptable[i%2][j]
 
-            if(j < i)
+            if (j < i)
             {
-                if(j <= i-2)
-                    free(dptable[i%2][j]);
-                dptable[i%2][j] = intal_add(dptable[(i-1)%2][j-1], dptable[(i-1)%2][j]);
+                if (j <= i - 2)
+                    free(dptable[i % 2][j]);
+                dptable[i % 2][j] = intal_add(dptable[(i - 1) % 2][j - 1], dptable[(i - 1) % 2][j]);
             }
             else
             {
-                dptable[i%2][j] = strdup(dptable[(i-1)%2][j-1]);
+                dptable[i % 2][j] = strdup(dptable[(i - 1) % 2][j - 1]);
             }
         }
     }
-    
+
     // free dptable[n-1][0..j] j = min(k, n-1)
     // free dptable[n][0..j] j = min(k-1, n)
-    if(n > 0)
+    if (n > 0)
     {
-        for (int j = 0; j <= n-1 && j <= k; j++)
+        for (int j = 0; j <= n - 1 && j <= k; j++)
         {
-            free(dptable[(n-1)%2][j]);
+            free(dptable[(n - 1) % 2][j]);
         }
     }
-    for (int j = 0; j <= n && j <= k-1; j++)
+    int _k = k;
+    for (int j = 0; j <= n && j <= _k - 1; j++)
     {
-        free(dptable[n%2][j]);
+        free(dptable[n % 2][j]);
     }
-    
 
-    char *res = dptable[n%2][k];
+    char *res = dptable[n % 2][k];
 
     free(dptable[0]);
     free(dptable[1]);
@@ -592,13 +597,15 @@ int intal_binsearch(char **arr, int n, const char *key)
     int mid;
     beg = 0;
     end = n - 1;
+    int idx = -1;
     while (beg <= end)
     {
         mid = (beg + end) / 2;
         int comp = intal_compare(key, arr[mid]);
         if (comp == 0)
         {
-            return mid;
+            idx = mid;
+            end = mid - 1;
         }
         else if (comp == 1) // key is greater than mid
         {
@@ -610,7 +617,7 @@ int intal_binsearch(char **arr, int n, const char *key)
         }
     }
 
-    return -1;
+    return idx;
 }
 
 static void merge(char **arr, int l, int r)

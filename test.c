@@ -23,7 +23,8 @@ int main(int argc, char const *argv[])
     // printf("%s\n", intal_factorial(atoi(s1)));
     // printf("%s\n", intal_fibonacci(atoi(s1)));
     // printf("%s\n", intal_mod(s1, s2));
-    printf("%s\n", intal_pow(s1, atoi(s2)));
+    // printf("%s\n", intal_pow(s1, atoi(s2)));
+    // printf("%s\n", intal_bincoeff(atoi(s1), atoi(s2)));
 
 
     // char *arr[] = {
@@ -36,6 +37,19 @@ int main(int argc, char const *argv[])
 
     // int arrlen = 5;
     // intal_sort(arr, arrlen);
+
+    char *arr[] = {
+        "1",
+        "2",
+        "3",
+        "3",
+        "3",
+        "4",
+        "7",
+        "88"
+    };
+
+    printf("%d\n", intal_binsearch(arr, 8, "3"));
 
     return 0;
 }
